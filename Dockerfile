@@ -1,32 +1,26 @@
-# Bước 1: Sử dụng một image Node.js chính thức
-FROM node:18-alpine AS build
+# Sử dụng Node.js làm base image
+FROM node:16
 
-# Bước 2: Đặt thư mục làm việc bên trong container
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Bước 3: Copy package.json và package-lock.json để cài đặt dependencies
-COPY package.json package-lock.json ./
+# Sao chép package.json và package-lock.json vào container
+COPY package*.json ./
 
-# Bước 4: Cài đặt dependencies
+# Cài đặt các phụ thuộc
 RUN npm install
 
-# Bước 5: Copy toàn bộ mã nguồn của ứng dụng vào container
+# Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
-# Bước 6: Build ứng dụng React cho môi trường production
+# Xây dựng ứng dụng
 RUN npm run build
 
-# Bước 7: Sử dụng Nginx để phục vụ ứng dụng React build
-FROM nginx:1.21-alpine
+# Cài đặt server để phục vụ ứng dụng
+RUN npm install -g serve
 
-# Bước 8: Copy các file build từ bước trước vào Nginx container
-COPY --from=build /app/build /usr/share/nginx/html
+# Chạy server để phục vụ ứng dụng
+CMD ["serve", "-s", "build"]
 
-# Bước 9: Copy file cấu hình Nginx
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-
-# Mở cổng 80 cho ứng dụng
-EXPOSE 80
-
-# Khởi chạy Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Mở cổng 3000
+EXPOSE 3000
