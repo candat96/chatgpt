@@ -1,38 +1,159 @@
+/* Các thiết kế cơ bản của ứng dụng */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #1e1e2d;
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .App {
+  /* width: 100%; */
+  /* max-width: 600px; */
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  background-color: #8c8ca0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  margin: 0;
+  padding: 16px;
+  background-color: #333350;
+  text-align: center;
+  font-size: 24px;
+  border-bottom: 1px solid #444;
+  color: #f5f5f5;
+}
+
+.settings {
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.settings input {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  background-color: #22223a;
+  color: white;
+  outline: none;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  background-color: #4b96e9;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #3b7ec1;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.chat-box {
+  flex: 1;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 10px;
+  overflow-y: auto;
+  background-color: #1c1c2b;
+  min-height: 50vh;
+  max-height: 50vh;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 16px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.user {
+  background-color: #4f4f7a;
+  align-self: flex-end;
+}
+
+.assistant {
+  background-color: #4b5e6e;
+  align-self: flex-start;
+}
+
+.input-box {
+  padding: 16px;
+  background-color: #333350;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #444;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  background-color: #22223a;
   color: white;
+  caret-color: #4b96e9;
 }
 
-.App-link {
-  color: #61dafb;
+button:disabled {
+  background-color: #555;
 }
 
-@keyframes App-logo-spin {
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  background-color: #ff6f61; /* Màu nền mới cho nút */
+  color: white; /* Màu chữ */
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Thêm hiệu ứng chuyển màu */
+}
+
+button:hover {
+  background-color: #e55b50; /* Màu nền khi rê chuột */
+  transform: scale(1.05); /* Tăng kích thước nút khi rê chuột */
+}
+
+button:disabled {
+  background-color: #555; /* Màu nền khi nút bị vô hiệu hóa */
 }
