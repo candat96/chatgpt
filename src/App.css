@@ -79,8 +79,8 @@ button:hover {
   gap: 10px;
   overflow-y: auto;
   background-color: #1c1c2b;
-  min-height: 50vh;
-  max-height: 50vh;
+  min-height: 60vh;
+  max-height: 60vh;
 }
 
 .message {

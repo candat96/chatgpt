@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -7,85 +6,68 @@ function App() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [streamingResponse, setStreamingResponse] = useState('');
-  const [apiKey, setApiKey] = useState(''); // API key
-  const [model, setModel] = useState(''); // Model mặc định
-  const [settingsSaved, setSettingsSaved] = useState(false); // Trạng thái đã lưu cài đặt
-  const [error, setError] = useState(''); // Trạng thái hiển thị thông báo lỗi
 
-  // Hàm xử lý khi nhấn nút Save
-  const handleSaveSettings = () => {
-    if (!apiKey || !model) {
-      setError('Please enter both API key and model to proceed.');
-      return;
-    }
-    setError('');
-    setSettingsSaved(true); // Đánh dấu cài đặt đã lưu
-  };
+  const apiKey = 'sk-cI8F4OQOkyzW8SGBILOGdSaNa3k5lhDX4mZbGRwgxbT3BlbkFJDxYW0SqzKwPRJpG69_xXmY53N0u265SPp3a5EUGxUA'; // API key
+  const [model, setModel] = useState('gpt-4'); // Model mặc định
 
-  // Hàm xử lý gửi tin nhắn
   const handleSend = async () => {
-    if (!settingsSaved) {
-      setError('Please save your API key and model first.');
-      return;
-    }
-
     if (!input.trim()) return;
 
     const userMessage = { role: 'user', content: input };
-    setMessages([...messages, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
     setLoading(true);
     setStreamingResponse(''); // Reset phản hồi trước
 
     try {
-      const requestOptions = {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`, // Sử dụng API key đã lưu
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-      };
-
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
+        body: JSON.stringify({
           model: model,
-          messages: [...messages, userMessage],
+          messages: updatedMessages, // Gửi toàn bộ lịch sử hội thoại
           stream: true, // Bật stream để nhận phản hồi dần dần
-        },
-        requestOptions
-      );
+        }),
+      });
 
-      const stream = new ReadableStream({
-        async start(controller) {
-          const reader = response.body.getReader();
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              controller.close();
-              break;
-            }
-            const text = new TextDecoder().decode(value);
-            const payloads = text.split('\n\n');
-            for (const payload of payloads) {
-              if (payload.includes('[DONE]')) return;
-              if (payload.trim().startsWith('data:')) {
-                const json = JSON.parse(payload.trim().substring(5));
-                if (json.choices) {
-                  const delta = json.choices[0].delta.content;
-                  if (delta) {
-                    setStreamingResponse((prev) => prev + delta);
-                  }
-                }
-              }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      let assistantMessage = { role: 'assistant', content: '' };
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter((line) => line.trim() !== '');
+
+        for (const line of lines) {
+          console.log(line);
+          if (line === 'data: [DONE]') break;
+
+          if (line.startsWith('data:')) {
+            const json = JSON.parse(line.substring(5));
+
+            if (json.choices && json.choices[0].delta.content) {
+              const delta = json.choices[0].delta.content;
+              assistantMessage.content += delta;
+              setStreamingResponse((prev) => prev + delta);
             }
           }
-        },
-      });
-      stream.getReader();
+        }
+      }
+
+      setMessages((prevMessages) => [...prevMessages, assistantMessage]);
     } catch (error) {
       console.error('Error fetching response:', error);
     } finally {
       setLoading(false);
+      setStreamingResponse(''); // Xóa streamingResponse khi phản hồi đã hoàn thành
     }
   };
 
@@ -93,24 +75,13 @@ function App() {
     <div className="App">
       <h1>Chat with GPT-4</h1>
 
-      {/* Hiển thị thông báo lỗi nếu có */}
-      {error && <div className="error">{error}</div>}
-
-      {/* Nhập API key và model */}
       <div className="settings">
-        <input
-          type="text"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="Enter your OpenAI API key"
-        />
         <input
           type="text"
           value={model}
           onChange={(e) => setModel(e.target.value)}
-          placeholder="Enter model (e.g., gpt-4, gpt-4-turbo, gpt-3.5-turbo)"
+          placeholder="Enter model (e.g., gpt-4, gpt-3.5-turbo)"
         />
-        <button onClick={handleSaveSettings}>Save</button>
       </div>
 
       <div className="chat-box">
@@ -129,16 +100,14 @@ function App() {
         )}
       </div>
 
-      {/* Khung nhập tin nhắn và nút gửi */}
       <div className="input-box">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
-          disabled={!settingsSaved} // Không cho nhập khi chưa lưu cài đặt
         />
-        <button onClick={handleSend} disabled={loading || !settingsSaved}>
+        <button onClick={handleSend} disabled={loading}>
           {loading ? 'Sending...' : 'Send'}
         </button>
       </div>
