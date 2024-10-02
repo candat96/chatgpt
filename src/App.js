@@ -5,9 +5,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [streamingResponse, setStreamingResponse] = useState('');
-
-  const sss = 'sk-cI8F4OQOkyzW8SGBILOGdSaNa3k5lhDX4mZbGRwgxbT3BlbkFJDxYW0SqzKwPRJpG69_xXmY53N0u265SPp3a5EUGxUA'; // API key
+  const [streamingResponse, setStreamingResponse] = useState('');// API key
   const [model, setModel] = useState('gpt-4'); // Model mặc định
 
   const handleSend = async () => {
@@ -24,7 +22,7 @@ function App() {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${sss}`,
+          'Authorization': `Bearer sk-cI8F4OQOkyzW8SGBILOGdSaNa3k5lhDX4mZbGRwgxbT3BlbkFJDxYW0SqzKwPRJpG69_xXmY53N0u265SPp3a5EUGxUA`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
