@@ -7,7 +7,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [streamingResponse, setStreamingResponse] = useState('');
 
-  const apiKey = ''; // API key
+  const apiKey = 'sk-cI8F4OQOkyzW8SGBILOGdSaNa3k5lhDX4mZbGRwgxbT3BlbkFJDxYW0SqzKwPRJpG69_xXmY53N0u265SPp3a5EUGxUA'; // API key
   const [model, setModel] = useState('gpt-4'); // Model mặc định
 
   const handleSend = async () => {
