@@ -7,7 +7,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [streamingResponse, setStreamingResponse] = useState('');
 
-  const apiKey = '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'; // API key
+  const apiKey = 'sk-GSMDe49W-B7q7L5ZlpuMefcRz8tUl9FoW-DxDKxJMaT3BlbkFJILvgGNXq7pIFBzfAOa1vQz0qnTvnd60sWuU_YLdJYA'; // API key
   const [model, setModel] = useState('gpt-4'); // Model mặc định
 
   const handleSend = async () => {
